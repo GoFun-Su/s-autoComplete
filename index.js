@@ -1,63 +1,48 @@
 ;(function ($) {
-	if (!Array.prototype.filter)
-		{
-  			Array.prototype.filter = function(fun /*, thisArg */)
-  			{
-
-    				if (this === void 0 || this === null)
-      					throw new TypeError();
-
-    					var t = Object(this);
-				var len = t.length >>> 0;
-				if (typeof fun !== "function")
-						 throw new TypeError();
-
-				var res = [];
-				var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
-				for (var i = 0; i < len; i++)
-				{
-						 if (i in t)
-						{
-							var val = t[i];
-
-				        // NOTE: Technically this should Object.defineProperty at
-				        //       the next index, as push can be affected by
-				        //       properties on Object.prototype and Array.prototype.
-				        //       But that method's new, and collisions should be
-				        //       rare, so use the more-compatible alternative.
-				        if (fun.call(thisArg, val, i, t))
-				          	res.push(val);
-				      	}
-				 }
-
-				return res;
-			};
-	}
+	//if (!Array.prototype.filter) {  
+    		Array.prototype.filter = function(fun){  
+        			var len = this.length;  
+        			if (typeof fun != "function"){  
+            			throw new TypeError();  
+        			}  
+        			var res = new Array();  
+        			var thisp = arguments[1];  
+        			for (var i = 0; i < len; i++){  
+            			if (i in this){  
+                				var val = this[i]; 
+                				if (fun.call(thisp, val, i, this)) {  
+                    					res.push(val);  
+               			 	}  
+            			}  
+        			}  
+        		return res;  
+    		};  
+	//}
 	function AutoComplete(options) {
             	var self = this;
             	options = options || {};
             	options.input = $(options.input);
             	self.onComplete = function () {};
-            	this.listUl = $("<ul></ul>");
-           		this.list = $("<div></div>");
-            	this.list.css({
-                		border: "1px solid #c6c6c6",
+            	self.listUl = $("<ul></ul>");
+           		self.list = $("<div></div>");
+            	self.list.css({
+                		border: "1px solid #ccc",
                 		borderBottom: "none",
                 		display: "none",
                 		position: "absolute",
                 		backgroundColor: "#ffffff",
                 		zIndex: 20001
             	});
-           	 	this.listUl.css({
+           	 	self.listUl.css({
                 		listStyle: "none",
                 		fontSize: "12px",
                 		padding: "0",
                 		margin: "0",
                 		backgroundColor: "#ffffff"
             	});
-            	this.list.append(this.listUl);
-            	$.extend(this, options);
-            	$(document.documentElement).append(this.list).bind("click", function () {
+            	self.list.append(self.listUl);
+            	$.extend(self, options);
+            	$(document.documentElement).append(self.list).bind("click", function () {
                 		self.hide();
             	});
             	self.input
@@ -101,32 +86,34 @@
                         			}
                         		break;
                     			default: 
+
                         			var value = self.input.val();
+                        			console.log(value)
                         			if(e.keyCode != undefined)
                         			{
                             				self.input.removeClass("completed");
                         			}
                        				
-                                			var data = [
-                                    				{"content":"wee"},{"content":"we"},{"content":"w"},
-                                    				{"content":"qee"},{"content":"se"},{"content":"erw"}
-                                    			];
+                                	var data = [
+                                    		{"content":"wee"},{"content":"we"},{"content":"w"},
+                                    		{"content":"qee"},{"content":"se"},{"content":"erw"}
+                                    ];
                                     		
-                                    		if(value.length  >0) {
-                                    			data = data.filter(function(item){
-  							return item.content.indexOf(value) != -1; 
-						});
-                                    		}
-                                    		self.fill(data);
-                                    		self.show();
+                                    if(value.length  >0) {
+                                    	data = data.filter(function(item){
+  											return item.content.indexOf(value) != -1; 
+										});
+                                    }
+                                    self.fill(data);
+                                    self.show();
                         		break;
                	 	}
             	})
             	.bind("focus", function () {
                 		$(this).trigger("keydown");
             	});
-            	this.focusIndex = 0;
-            	this.listLen = 0;
+            	this.focusIndex = 0;//当前活动的list的index
+            	this.listLen = 0;//list数组的长度
             	this.shown = false;
             	setInterval(function () {
                 		self.adjust();
