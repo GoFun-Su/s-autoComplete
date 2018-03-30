@@ -1,4 +1,16 @@
-;(function ($) {
+(function (factory) {
+    "use strict";
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object' && typeof require === 'function') {
+        // Browserify
+        factory(require('jquery'));
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
 	Array.prototype.filter = function(fun){  
         var len = this.length;  
         if (typeof fun != "function"){  
@@ -246,4 +258,4 @@
     	this.list.hide();
 	};
 	window.AutoComplete = AutoComplete;
-})(jQuery);
+}));
